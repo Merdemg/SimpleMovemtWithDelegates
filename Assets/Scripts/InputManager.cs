@@ -17,74 +17,64 @@ public class InputManager : MonoBehaviour
 
     Camera camera;
 
-    public delegate void SelectCubes(List<ControllableCube> Cubes);
+    public delegate void SelectCubes(List<ControllableCube> Cubes); // Parameter is a list so we can select ALL cubes
     public SelectCubes selectCubes;
 
     public delegate void MoveSelectedCubes(Vector3 Direction);
     public MoveSelectedCubes moveSelectedCubes;
 
-    void Start()
-    {
+    void Start() {
         camera = Camera.main;
     }
 
-    public void InitCube(ControllableCube Cube){
-        if (!allCubes.Contains(Cube))
-        {
+    public void InitCube(ControllableCube Cube) {
+        if (!allCubes.Contains(Cube)) {
             allCubes.Add(Cube);
         }
     }
 
-    void Update()
-    {
+    void Update() {
         if (Input.GetKeyDown(KeyCode.M)) // Select all cubes
         {
             selectCubes?.Invoke(allCubes);
-        }else if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("Mouse button down");
+        }
+        else if (Input.GetMouseButtonDown(0)) {
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.transform.GetComponent<ControllableCube>())
-                {
-                List<ControllableCube> selectedCubes = new List<ControllableCube> {hit.transform.GetComponent<ControllableCube>()};
-                selectCubes?.Invoke(selectedCubes);
-                }else
-                {
+
+            if (Physics.Raycast(ray, out hit)) {
+                if (hit.transform.GetComponent<ControllableCube>()) { // if we click on a cube, select it
+                    List<ControllableCube> selectedCubes = new List<ControllableCube> { hit.transform.GetComponent<ControllableCube>() };
+                    selectCubes?.Invoke(selectedCubes);
+                }
+                else { // if we clicked on anything other than a cube, unselect all selected cubes
                     selectCubes?.Invoke(new List<ControllableCube>());
                 }
-            }else
-            {
+            }
+            else { // if we clicked on empty space, unselect any selected cubes
                 selectCubes?.Invoke(new List<ControllableCube>());
             }
         }
 
 
-        Vector3 movementDir = new Vector3(0,0,0);
+        Vector3 movementDir = new Vector3(0, 0, 0);
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            movementDir += new Vector3(0,0,1);
+        if (Input.GetKey(KeyCode.W)) {
+            movementDir += new Vector3(0, 0, 1);
         }
-        if (Input.GetKey(KeyCode.S))
-        {
-            movementDir += new Vector3(0,0,-1);
+        if (Input.GetKey(KeyCode.S)) {
+            movementDir += new Vector3(0, 0, -1);
         }
-        if (Input.GetKey(KeyCode.D))
-        {
-            movementDir += new Vector3(1,0,0);
+        if (Input.GetKey(KeyCode.D)) {
+            movementDir += new Vector3(1, 0, 0);
         }
-        if (Input.GetKey(KeyCode.A))
-        {
-            movementDir += new Vector3(-1,0,0);
+        if (Input.GetKey(KeyCode.A)) {
+            movementDir += new Vector3(-1, 0, 0);
         }
         MoveCubes(movementDir);
     }
 
-    void MoveCubes(Vector3 Direction){
+    void MoveCubes(Vector3 Direction) {
         Direction.Normalize();
         moveSelectedCubes?.Invoke(Direction);
     }
